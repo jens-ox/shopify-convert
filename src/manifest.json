@@ -1,0 +1,10 @@
+{
+  "name": "Shopify Converter",
+  "short_name": "Shopify Convert",
+  "description": "Convert Excel files to Shopify-compatible csv files",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff",
+  "theme_color": "#9B2C2C"
+}
