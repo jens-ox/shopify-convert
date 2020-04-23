@@ -7,7 +7,6 @@ import Footer from './footer'
 // Code-splitting is automated for routes
 import Home from '../routes/home'
 import About from '../routes/about'
-import Products from '../routes/products'
 
 export default class App extends Component {
   /** Gets fired when the route changes.
@@ -27,7 +26,6 @@ export default class App extends Component {
             <Router onChange={this.handleRoute}>
               <Home path="/" />
               <About path="/about" />
-              <Products path="/products" />
             </Router>
           </div>
         </div>
