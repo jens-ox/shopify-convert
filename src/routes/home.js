@@ -1,6 +1,8 @@
 import { Component } from 'preact'
 import xlsx from 'xlsx'
 
+const rawHeader = ['Handle', 'Title', 'Body (HTML)', 'Vendor', 'Type', 'Tags', 'Published', 'Option1 Name', 'Option1 Value', 'Option2 Name', 'Option2 Value', 'Option3 Name', 'Option3 Value', 'Variant SKU', 'Variant Grams', 'Variant Inventory Tracker', 'Variant Inventory Qty', 'Variant Inventory Policy', 'Variant Fulfillment Service', 'Variant Price', 'Variant Compare At Price', 'Variant Requires Shipping', 'Variant Taxable', 'Variant Barcode', 'Image Src', 'Image Position', 'Image Alt Text', 'Gift Card', 'SEO Title', 'SEO Description', 'Google Shopping / Google Product Category', 'Google Shopping / Gender', 'Google Shopping / Age Group', 'Google Shopping / MPN', 'Google Shopping / AdWords Grouping', 'Google Shopping / AdWords Labels', 'Google Shopping / Condition', 'Google Shopping / Custom Product', 'Google Shopping / Custom Label 0', 'Google Shopping / Custom Label 1', 'Google Shopping / Custom Label 2', 'Google Shopping / Custom Label 3', 'Google Shopping / Custom Label 4', 'Variant Image', 'Variant Weight Unit', 'Variant Tax Code', 'Cost per item']
+
 export default class Home extends Component {
   onChooseFile = ({ target: input }) => {
     if (!input) throw new Error("The browser does not properly implement the event object")
@@ -9,19 +11,31 @@ export default class Home extends Component {
     const file = input.files[0]
     const fr = new FileReader()
     fr.onload = ({ target: file }) => {
-      console.log('got file: ', file)
       const data = new Uint8Array(file.result)
       const content = xlsx.read(data, { type: 'array' })
       const json = xlsx.utils.sheet_to_json(content.Sheets[content.SheetNames[0]])
       const keys = Array.from(new Set(json.map(entry => Object.keys(entry)).flat()))
       const map = new Map()
-      console.log('raw json: ', json)
       this.setState({ json, keys, map })
     }
     fr.readAsArrayBuffer(file)
   }
 
+  onSelect = tableKey => event => {
+    console.log(tableKey, event.target.value)
+    const map = this.state.map
+    map.set(tableKey, event.target.value)
+    this.setState({ map })
+  }
+
+  convertToCsv = () => {
+    console.log('converting to csv')
+  }
+
   render (_, { keys, json, map }) {
+    const availableOptions = map ? rawHeader.filter((_, i) => !map.has(i)) : []
+    const mapNotEmpty = map && map.size > 0
+
     return (
       <div class="container px-1">
         <h1>
@@ -55,10 +69,11 @@ export default class Home extends Component {
                   <tr>
                     <td>{key}</td>
                     <td>
-                      <select name="test" id="test">
+                      <select name="test" id="test" onChange={this.onSelect(key)}>
                         <option value="">keine</option>
-                        <option value="title">Titel</option>
-                        <option value="body">Beschreibung</option>
+                        {availableOptions.map(option => (
+                          <option value={option}>{option}</option>
+                        ))}
                       </select>
                     </td>
                     {json[0] && (
@@ -70,6 +85,12 @@ export default class Home extends Component {
                 ))}
               </tbody>
             </table>
+          </section>
+        )}
+        {mapNotEmpty && (
+          <section>
+            <h3 className="block">Schritt 3: Daten exportieren</h3>
+            <button className="button" onClick={this.convertToCsv}>Daten als CSV herunterladen</button>
           </section>
         )}
       </div>
