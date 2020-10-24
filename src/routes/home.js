@@ -60,9 +60,11 @@ export default class Home extends Component {
   }
 
   onSelect = tableKey => event => {
-    console.log(tableKey, event.target.value)
+    const whichField = event.target.value
+    console.log(tableKey, whichField)
     const map = this.state.map
-    map.set(tableKey, event.target.value)
+    if (whichField !== '') map.set(tableKey, whichField)
+    else map.delete(tableKey)
     this.setState({ map })
   }
 
